@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>まなびー｜達人の投稿（閲覧）</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    :root{
+      --primary: #3b82f6;
+      --primary-soft: #eff6ff;
+      --bg: #f8fafc;
+      --card-border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Meiryo", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: -0.02em;
+    }
+
+    .font-heavy { font-weight: 800; letter-spacing: -0.01em; }
+
+    .card-shadow{
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .surface{
+      background: #fff;
+      border: 1px solid var(--card-border);
+    }
+
+    .label-text {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+    }
+
+    .bg-primary{ background: var(--primary); }
+    .text-primary{ color: var(--primary); }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:600;
+      border:1px solid rgba(0,0,0,0.05);
+      white-space: nowrap; /* チップ内改行を防ぐ */
+    }
+    .chip-blue   { background: var(--primary-soft); color: var(--primary); border-color: #bfdbfe; }
+    .chip-orange { background:#fff7ed; color:#c2410c; border-color:#fed7aa; }
+    .chip-green  { background:#f0fdf4; color:#15803d; border-color:#bbf7d0; }
+    .chip-slate  { background:#f8fafc; color:#475569; border-color:#e2e8f0; }
+
+    /* リンクCTA：統一コンポーネント（イベントリンク/カードリンクで同じ見た目） */
+    .cta-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #0f172a;
+      white-space: nowrap;    /* 「リ↵ンク」対策 */
+      flex: 0 0 auto;         /* 押しつぶされて改行されるのを防ぐ */
+      min-width: 92px;        /* ボタン幅の最小を確保 */
+      justify-content: center;
+    }
+    .cta-link:hover{
+      background: var(--primary-soft);
+      border-color: #bfdbfe;
+    }
+
+    /* 役に立った：サブアクション化（小さく・控えめに） */
+    .helpful-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      transition: 0.2s;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    .helpful-btn:hover{
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    summary { list-style:none; outline: none; }
+    summary::-webkit-details-marker { display:none; }
+  </style>
+</head>
+
+<body class="pb-12">
+
+  <!-- トップバー -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-100">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <button class="p-2 -ml-2 rounded-xl hover:bg-gray-100 transition" aria-label="menu">
+        <i class="fa-solid fa-bars text-gray-500 text-lg"></i>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center">
+          <i class="fa-regular fa-user text-white text-lg"></i>
+        </div>
+        <div class="leading-tight">
+          <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">APP</p>
+          <p class="text-lg font-extrabold text-gray-900 -mt-0.5">まなびー</p>
+        </div>
+      </div>
+
+      <div class="w-10 h-10 rounded-full overflow-hidden border border-gray-100 bg-gray-200">
+        <img src="https://i.pravatar.cc/80?img=12" alt="avatar" class="w-full h-full object-cover" />
+      </div>
+    </div>
+  </header>
+
+  <main id="app" class="max-w-md mx-auto px-4 pt-4 relative">
+
+    <!-- イベントヘッダー（MGAを少し小さくして主役を分散） -->
+    <div class="pt-2">
+      <div class="surface rounded-2xl card-shadow p-5">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">イベントタイトル</p>
+            <!-- 2xl → xl に近いサイズへ（少しだけ縮小） -->
+            <h1 class="text-xl font-extrabold text-gray-900 leading-tight">MGA</h1>
+          </div>
+          <div class="text-right">
+            <p class="text-[12px] font-extrabold text-primary">閲覧ページ</p>
+            <p class="text-[11px] text-gray-400">フック・ひきこみを“単語チップ”で覚える</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- イベントリンク / カードリンク（リンクCTAを統一） -->
+    <div class="mt-3 space-y-3">
+      <a id="event-link" href="#" target="_blank" rel="noopener"
+         class="block surface rounded-2xl card-shadow p-5 hover:-translate-y-[1px] transition">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-primary-soft flex items-center justify-center">
+            <i class="fa-solid fa-link text-primary"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">イベントリンク</p>
+
+            <div class="flex items-center justify-between gap-3 mt-1">
+              <p class="text-base font-extrabold text-gray-900 truncate">今回のイベント詳細</p>
+              <span class="cta-link">
+                <i class="fa-solid fa-arrow-up-right-from-square text-gray-500"></i>
+                公式ページへ
+              </span>
+            </div>
+
+            <p class="text-[11px] text-gray-500 mt-1">
+              特典などはリンク先で確認できます（URLはあとで差し替えOK）
+            </p>
+          </div>
+        </div>
+      </a>
+
+      <a id="card-link" href="#" target="_blank" rel="noopener"
+         class="block surface rounded-2xl card-shadow p-5 hover:-translate-y-[1px] transition">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center">
+            <i class="fa-regular fa-credit-card text-orange-600"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">カードリンク</p>
+
+            <div class="flex items-center justify-between gap-3 mt-1">
+              <p class="text-base font-extrabold text-gray-900 truncate">関連カード（デザイン / 入会特典）</p>
+              <span class="cta-link">
+                <i class="fa-solid fa-arrow-up-right-from-square text-gray-500"></i>
+                公式ページへ
+              </span>
+            </div>
+
+            <p class="text-[11px] text-gray-500 mt-1">
+              カードのデザインや新規入会特典はリンク先で確認できます（URLはあとで差し替えOK）
+            </p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- 投稿セクション見出し -->
+    <div class="mt-4 surface rounded-2xl card-shadow p-5">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">投稿</p>
+          <h2 class="text-xl font-extrabold text-gray-900 leading-tight">達人の投稿</h2>
+        </div>
+        <a href="#"
+           class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl border border-gray-200 bg-gray-50 text-sm font-extrabold text-gray-700 hover:bg-gray-100 transition whitespace-nowrap">
+          <i class="fa-regular fa-circle-question text-gray-500"></i>
+          フック・引き込みとは？
+        </a>
+      </div>
+      <p class="text-[11px] text-gray-400 mt-2">フック・ひきこみを“単語チップ”で覚える</p>
+    </div>
+
+    <!-- 一覧 -->
+    <div id="ranking-container" class="space-y-4 pb-20 mt-4"></div>
+
+  </main>
+
+  <script>
+    let posts = [
+      {
+        id: 1,
+        staff_name: "田中",
+        event_name: "MGA",
+        store_name: "渋谷",
+        hook_words: ["ミセスのカード持ってますか？"],
+        pitch_words: ["券面デザイン提示", "新デザイン"],
+        tags: ["20代女性", "お連れ様一人", "ライトファン"],
+        hook_content: "ミセスのカードとか持っています？",
+        pitch_content: "券面を実際にみせながら、「最近新しいデザインも出たんですよ！」",
+        likes: 15,
+        helpful: 0
+      },
+      {
+        id: 2,
+        staff_name: "佐藤",
+        event_name: "MGA",
+        store_name: "新宿",
+        hook_words: ["ファンクラブ加入してますか？"],
+        pitch_words: ["年会費500円OFF"],
+        tags: ["30代女性", "熱量高め"],
+        hook_content: "ミセスのファンクラブ入っていますか？（大量にご購入されていたので、かなり熱心なファンかなと思い話しかけました）",
+        pitch_content: "ミセスのデザインのエポスカードがあるのですが、お作りいただくとファンクラブの会費が初回500円オフになりますよ",
+        likes: 28,
+        helpful: 0
+      },
+      {
+        id: 3,
+        staff_name: "鈴木",
+        event_name: "MGA",
+        store_name: "池袋",
+        hook_words: ["推し誰ですか？"],
+        pitch_words: ["2000円OFF", "推し確率UP"],
+        tags: ["20代男性", "缶バッチ購入"],
+        hook_content: "（缶バッチをたくさん購入していたので）誰が推しなんですか？",
+        pitch_content: "エポスカードをお作りいただくと2000円分お会計からお値引きできます！推しが当たる可能性高まりますよ、どうです？",
+        likes: 10,
+        helpful: 0
+      }
+    ];
+
+    function chipsHtml(words, colorClass) {
+      if (!Array.isArray(words) || words.length === 0) return '';
+      return words.map(w => `<span class="chip ${colorClass}">${escapeHtml(w)}</span>`).join('');
+    }
+
+    function renderRanking() {
+      const container = document.getElementById('ranking-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const sorted = [...posts].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+
+      sorted.forEach((p, idx) => {
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '📄';
+
+        const card = document.createElement('div');
+        card.className = "surface p-5 rounded-2xl card-shadow";
+
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-4 gap-3">
+            <div class="min-w-0">
+              <span class="text-[10px] bg-[var(--primary-soft)] text-primary px-2 py-0.5 rounded-full font-extrabold border border-[#bfdbfe]">
+                ${escapeHtml(p.event_name)}
+              </span>
+              <h3 class="font-extrabold text-gray-900 mt-1 truncate">${medal} ${escapeHtml(p.staff_name)}
+                <span class="text-xs text-gray-400 font-normal">@${escapeHtml(p.store_name || "-")}</span>
+              </h3>
+            </div>
+
+            <!-- 役に立った：サブ化（小さめ・控えめ） -->
+            <button onclick="helpfulPost(${p.id})" class="helpful-btn" aria-label="役に立った">
+              <i class="fa-regular fa-thumbs-up text-gray-500 text-[14px]"></i>
+              <span class="text-[12px] font-extrabold text-gray-800">役に立った</span>
+              <span class="text-[11px] font-extrabold text-gray-500">(${p.helpful || 0})</span>
+            </button>
+          </div>
+
+          <div class="mb-3">
+            <p class="text-[10px] font-extrabold text-orange-600 mb-2">🪝 フック</p>
+            <div class="flex flex-wrap gap-2">
+              ${chipsHtml(p.hook_words, 'chip-orange')}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <p class="text-[10px] font-extrabold text-green-700 mb-2">📢 引き込み</p>
+            <div class="flex flex-wrap gap-2">
+              ${chipsHtml(p.pitch_words, 'chip-green')}
+            </div>
+          </div>
+
+          <div class="mb-1">
+            <p class="text-[10px] font-extrabold text-slate-700 mb-2">🏷 属性</p>
+            <div class="flex flex-wrap gap-2">
+              ${chipsHtml(p.tags, 'chip-slate')}
+            </div>
+          </div>
+
+          <details class="mt-4 details-anim rounded-2xl border border-gray-200 bg-gray-50">
+            <summary class="px-4 py-3 cursor-pointer flex items-center justify-between">
+              <span class="text-sm font-extrabold text-gray-800">全文を見る</span>
+              <i class="fa-solid fa-chevron-down text-gray-400 chev"></i>
+            </summary>
+            <div class="px-4 pb-4">
+              <div class="mt-3 p-4 bg-orange-50 rounded-2xl">
+                <p class="text-[11px] font-extrabold text-orange-600 mb-2">🪝 フック（全文）</p>
+                <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.hook_content || "")}</p>
+              </div>
+              <div class="mt-3 p-4 bg-green-50 rounded-2xl">
+                <p class="text-[11px] font-extrabold text-green-700 mb-2">📢 ひきこみ（全文）</p>
+                <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.pitch_content || "")}</p>
+              </div>
+            </div>
+          </details>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    window.helpfulPost = function(id) {
+      const post = posts.find(p => p.id === id);
+      if (post) {
+        post.helpful = (post.helpful || 0) + 1;
+        renderRanking();
+      }
+    };
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    renderRanking();
+  </script>
+</body>
+</html>
