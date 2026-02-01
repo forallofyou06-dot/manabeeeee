@@ -17,6 +17,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+  <!-- ✅ Supabase JS（機能追加・UI変更なし） -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
     :root{
       --primary: #3b82f6;
@@ -357,11 +360,53 @@
       });
     }
 
-    window.helpfulPost = function(id) {
-      const post = posts.find(p => p.id === id);
-      if (post) {
-        post.helpful = (post.helpful || 0) + 1;
-        renderRanking();
+    // ✅ Supabase（機能追加・UI変更なし）
+    const SUPABASE_URL = "https://uwlpkdgcfzdhgiptasov.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vKVE-SAFvXjq5fLHApnqFg_B5QbxJZq";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    async function ensureAnonSession() {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) throw error;
+      if (data && data.session) return;
+
+      const { error: signInError } = await supabaseClient.auth.signInAnonymously();
+      if (signInError) throw signInError;
+    }
+
+    async function loadHelpfulCountsFromDB() {
+      const ids = posts.map(p => p.id);
+      const { data, error } = await supabaseClient
+        .from("posts")
+        .select("id, helpful_count")
+        .in("id", ids);
+
+      if (error) throw error;
+
+      const map = new Map((data || []).map(row => [row.id, row.helpful_count]));
+      posts.forEach(p => {
+        const v = map.get(p.id);
+        if (typeof v === "number") p.helpful = v;
+      });
+    }
+
+    window.helpfulPost = async function(id) {
+      try {
+        await ensureAnonSession();
+
+        const { data, error } = await supabaseClient
+          .rpc("vote_helpful", { p_post_id: id });
+
+        if (error) throw error;
+
+        const post = posts.find(p => p.id === id);
+        if (post) {
+          post.helpful = typeof data === "number" ? data : (post.helpful || 0);
+          renderRanking();
+        }
+      } catch (e) {
+        console.error(e);
+        // UIは変えない条件なので、画面表示は変えずにconsoleだけ
       }
     };
 
@@ -374,7 +419,17 @@
         .replaceAll("'", "&#039;");
     }
 
-    renderRanking();
+    (async function init() {
+      try {
+        await ensureAnonSession();
+        await loadHelpfulCountsFromDB();
+      } catch (e) {
+        console.error(e);
+        // UIは変えない条件なので、画面表示は変えずにconsoleだけ
+      } finally {
+        renderRanking();
+      }
+    })();
   </script>
 </body>
 </html>
