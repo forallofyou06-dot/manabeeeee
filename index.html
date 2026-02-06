@@ -11,7 +11,7 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-0B7DZ2DQDD');
+    gtag('config', 'G-LJZBTQNKKG');
   </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -155,7 +155,7 @@
           <div>
             <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">イベントタイトル</p>
             <!-- 2xl → xl に近いサイズへ（少しだけ縮小） -->
-            <h1 class="text-xl font-extrabold text-gray-900 leading-tight">MGA</h1>
+            <h1 class="text-xl font-extrabold text-gray-900 leading-tight">バレンタイン</h1>
           </div>
           <div class="text-right">
             <p class="text-[12px] font-extrabold text-primary">閲覧ページ</p>
@@ -167,7 +167,7 @@
 
     <!-- イベントリンク / カードリンク（リンクCTAを統一） -->
     <div class="mt-3 space-y-3">
-      <a id="event-link" href="#" target="_blank" rel="noopener"
+      <a id="event-link" href="https://www.0101.co.jp/086/news/detail.html?article_seq=11513&article_type=fea" target="_blank" rel="noopener"
          class="block surface rounded-2xl card-shadow p-5 hover:-translate-y-[1px] transition">
         <div class="flex items-start gap-3">
           <div class="w-10 h-10 rounded-2xl bg-primary-soft flex items-center justify-center">
@@ -185,7 +185,7 @@
             </div>
 
             <p class="text-[11px] text-gray-500 mt-1">
-              特典などはリンク先で確認できます（URLはあとで差し替えOK）
+              公式HPに遷移し、詳細情報を確認できます。
             </p>
           </div>
         </div>
@@ -198,18 +198,18 @@
             <i class="fa-regular fa-credit-card text-orange-600"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">カードリンク</p>
+            <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">カードリンク（準備中）</p>
 
             <div class="flex items-center justify-between gap-3 mt-1">
-              <p class="text-base font-extrabold text-gray-900 truncate">関連カード（デザイン / 入会特典）</p>
+              <p class="text-base font-extrabold text-gray-900 truncate">関連カード</p>
               <span class="cta-link">
                 <i class="fa-solid fa-arrow-up-right-from-square text-gray-500"></i>
-                公式ページへ
+                準備中
               </span>
             </div>
 
             <p class="text-[11px] text-gray-500 mt-1">
-              カードのデザインや新規入会特典はリンク先で確認できます（URLはあとで差し替えOK）
+             今回のイベントに関連したカードのページに遷移します。入会特典などを確認できます。
             </p>
           </div>
         </div>
@@ -223,8 +223,7 @@
           <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">投稿</p>
           <h2 class="text-xl font-extrabold text-gray-900 leading-tight">達人の投稿</h2>
         </div>
-        <a href="#"
-           class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl border border-gray-200 bg-gray-50 text-sm font-extrabold text-gray-700 hover:bg-gray-100 transition whitespace-nowrap">
+        <a id="hook-help-link" href="#" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl border border-gray-200 bg-gray-50 text-sm font-extrabold text-gray-700 hover:bg-gray-100 transition whitespace-nowrap">
           <i class="fa-regular fa-circle-question text-gray-500"></i>
           フック・引き込みとは？
         </a>
@@ -235,47 +234,101 @@
     <!-- 一覧 -->
     <div id="ranking-container" class="space-y-4 pb-20 mt-4"></div>
 
+    <!-- ✅ 追加：投稿 / アンケート（横並び）※本当に一番下 -->
+    <div class="mt-4">
+      <div class="grid grid-cols-2 gap-3">
+        <a id="post-btn" href="#"
+           class="surface rounded-2xl card-shadow p-4 hover:-translate-y-[1px] transition flex items-center justify-center gap-2 font-extrabold text-gray-900">
+          <i class="fa-solid fa-pen-to-square text-gray-500"></i>
+          投稿
+        </a>
+
+        <a id="survey-btn" href="#"
+           class="surface rounded-2xl card-shadow p-4 hover:-translate-y-[1px] transition flex items-center justify-center gap-2 font-extrabold text-gray-900">
+          <i class="fa-solid fa-clipboard-list text-gray-500"></i>
+          アンケート
+        </a>
+      </div>
+
+      <div class="mt-2 space-y-1 pb-2">
+        <p class="text-[11px] text-gray-500">※運営中にお気づきの点があれば、「投稿」からぜひ共有してください（いつでもOK）</p>
+        <p class="text-[11px] text-gray-500">※ご利用後に「アンケート」へのご回答にご協力をお願いいたします</p>
+      </div>
+    </div>
+
   </main>
 
   <script>
     let posts = [
       {
         id: 1,
-        staff_name: "田中",
-        event_name: "MGA",
-        store_name: "渋谷",
-        hook_words: ["ミセスのカード持ってますか？"],
-        pitch_words: ["券面デザイン提示", "新デザイン"],
-        tags: ["20代女性", "お連れ様一人", "ライトファン"],
-        hook_content: "ミセスのカードとか持っています？",
-        pitch_content: "券面を実際にみせながら、「最近新しいデザインも出たんですよ！」",
-        likes: 15,
-        helpful: 0
-      },
-      {
-        id: 2,
-        staff_name: "佐藤",
-        event_name: "MGA",
-        store_name: "新宿",
-        hook_words: ["ファンクラブ加入してますか？"],
-        pitch_words: ["年会費500円OFF"],
-        tags: ["30代女性", "熱量高め"],
-        hook_content: "ミセスのファンクラブ入っていますか？（大量にご購入されていたので、かなり熱心なファンかなと思い話しかけました）",
-        pitch_content: "ミセスのデザインのエポスカードがあるのですが、お作りいただくとファンクラブの会費が初回500円オフになりますよ",
-        likes: 28,
-        helpful: 0
-      },
-      {
-        id: 3,
-        staff_name: "鈴木",
-        event_name: "MGA",
-        store_name: "池袋",
-        hook_words: ["推し誰ですか？"],
-        pitch_words: ["2000円OFF", "推し確率UP"],
-        tags: ["20代男性", "缶バッチ購入"],
-        hook_content: "（缶バッチをたくさん購入していたので）誰が推しなんですか？",
-        pitch_content: "エポスカードをお作りいただくと2000円分お会計からお値引きできます！推しが当たる可能性高まりますよ、どうです？",
-        likes: 10,
+        staff_name: "櫻井さん",
+        event_name: "バレンタイン",
+        store_name: "有楽町",
+        
+        // 🏷 属性：客層＆状況
+        tags: [
+          "20〜60代女性",
+          "急いでる人多い",
+          "手短に",
+        ],
+        // 🪝 フック：短い“言い回し”をチップ化
+        hook_words: [
+          "ポイントで割引できますが、エポスカードお持ちですか？",
+        ],
+
+        // 📢 引き込み：魅力の核（=引き込み）をチップ化
+        pitch_words: [
+          "お会計からすぐ3000円割引",
+          "チョコ価格上昇なのでキャンペーンで割引中",
+        ],
+
+        // 🧾 カード説明：チップ
+        card_words: [
+          "昔のマルイカードのイメージが強い人多い",
+          "いまのエポスをしっかり説明",
+          "所要20分前後",
+          "時間ない人には無理に勧めない",
+        ],
+
+        // ▼ 全文（detailsで見る用）※ ここを分割！
+        hook_content:
+`【フック（レジを打ちながら）】
+「こちらの売り場でもエポスのポイントで割引き出来るのでお待ちですか？」
+
+・有楽町でも半分くらいのお客様はエポスカードお持ちの方が多かったのでこの聞き方の方が持ってる方はエポスで支払いしてもらえたり、結果ポイントが貯まってて喜んでもらえるケースが多かった。
+・持ってない方はこの聞き方だと「持ってるけど忘れました」とか「持ってません」と確認が出来る。`,
+
+        // ✅ 引き込み（全文）
+        pitch_content:
+`【引き込み】
+まず「過去に作った事ありますか？」と確認してから
+「今、バレンタインに合わせてキャンペーンやってて作った事ない方がスマホで作ってこのカードで支払いするとこのお会計からすぐに3000円割引きになりますよ」
+または
+「今、チョコレートも価格が上がったり、自分用に買う方が多いのでキャンペーンで3000円割引き付けてます」
+
+・Le TAOとかデルレイなどの商品を買う方は自分用で買う方が多いので作ってくれるケースが多かった。`,
+
+        // ✅ カード説明（全文）
+        card_content:
+`【カード説明（食品イベント向け：短く・安心を最後に）】
+食品のイベントは急いでる方も多いので
+「お作りするお時間大丈夫なら2年目以降も年会費や更新費などもないVISAの付いたクレジットカードでお客様のスマホから入会が出来てこの場で3000円割引いて⚪︎⚪︎⚪︎円で買って頂けますよ」
+
+※この時点で時間がないという方は無理せず「じゃ、又次回お願いします」と無理にお勧めしません。
+どのくらいかかりますか？と聞かれた場合も「早い方で20分前後ですかね？」とすぐ出来るとは言わず納得された方だけ案内。
+※3000円未満のお買い上げの方は「今日カードで買っても引き落としがないのでそのまま商品お持ち帰り出来ますよ」など説明も響きます。`,
+
+        // ✅ 補足メモ（全文）
+        memo_content:
+`【補足メモ】
+・食品のイベント全般的に急いでる方や時間のない方が多いので時間がない方には無理に勧めない。
+（無理に勧めても途中離脱が多いし、ちゃんと説明しても年代上の方は面倒くさいと戻ってくるから）
+・年代上の方が多いので昔のマルイのカードのイメージを持っている方が多いので、2年目以降も会費がかからない・お申込みに紙は使わずお客様のスマホだけで出来る・VISAが付いてるのでマルイ以外でも使えるなどしっかりお話しする事が大切。
+・長い口コミは精算列が長くなるので手短にお勧めは粘らない。
+この辺がポイントだと思います。`,
+
+        likes: 18,
         helpful: 0
       }
     ];
@@ -331,6 +384,13 @@
             </div>
           </div>
 
+          <div class="mb-3">
+            <p class="text-[10px] font-extrabold text-primary mb-2">🧾 カード説明</p>
+            <div class="flex flex-wrap gap-2">
+              ${chipsHtml(p.card_words, 'chip-blue')}
+            </div>
+          </div>
+
           <div class="mb-1">
             <p class="text-[10px] font-extrabold text-slate-700 mb-2">🏷 属性</p>
             <div class="flex flex-wrap gap-2">
@@ -344,14 +404,27 @@
               <i class="fa-solid fa-chevron-down text-gray-400 chev"></i>
             </summary>
             <div class="px-4 pb-4">
+
               <div class="mt-3 p-4 bg-orange-50 rounded-2xl">
                 <p class="text-[11px] font-extrabold text-orange-600 mb-2">🪝 フック（全文）</p>
                 <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.hook_content || "")}</p>
               </div>
+
               <div class="mt-3 p-4 bg-green-50 rounded-2xl">
-                <p class="text-[11px] font-extrabold text-green-700 mb-2">📢 ひきこみ（全文）</p>
+                <p class="text-[11px] font-extrabold text-green-700 mb-2">📢 引き込み（全文）</p>
                 <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.pitch_content || "")}</p>
               </div>
+
+              <div class="mt-3 p-4 bg-blue-50 rounded-2xl">
+                <p class="text-[11px] font-extrabold text-primary mb-2">🧾 カード説明（全文）</p>
+                <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.card_content || "")}</p>
+              </div>
+
+              <div class="mt-3 p-4 bg-slate-50 rounded-2xl">
+                <p class="text-[11px] font-extrabold text-slate-700 mb-2">📝 補足メモ</p>
+                <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.memo_content || "")}</p>
+              </div>
+
             </div>
           </details>
         `;
@@ -418,6 +491,234 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
+
+    // ===============================
+    // ✅ 追加：投稿 / アンケート（動作だけ付与・UIは上で追加済み）
+    // ===============================
+    const POST_URL = "https://docs.google.com/forms/d/1ZVv_aefg2sSfXiKEzNXprRJEb0C0tQiUAH50M_l-RAs/edit?usp=forms_home&ouid=117951192700997366273&ths=true";
+    const SURVEY_URL = "https://docs.google.com/forms/d/1P8QJ34C5Mt6PQq82GSrHhbm3K8mQK-gSNp33HA9at9k/edit";
+
+    window.addEventListener('load', () => {
+      const postBtn = document.getElementById('post-btn');
+      const surveyBtn = document.getElementById('survey-btn');
+
+      if (postBtn) {
+        postBtn.href = POST_URL;
+        postBtn.target = "_blank";
+        postBtn.rel = "noopener";
+      }
+
+      if (surveyBtn) {
+        surveyBtn.href = SURVEY_URL;
+        surveyBtn.target = "_blank";
+        surveyBtn.rel = "noopener";
+      }
+    });
+
+    // ===============================
+    // 「フック・引き込みとは？」別タブ（1HTML完結）
+    // ===============================
+    const HOOK_HELP_HTML = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>フック・引き込みとは？｜カードご案内の流れ</title>
+
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    body { background-color: #f8f9ff; color: #333; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .accent-purple { background-color: #f3f0ff; border: 1px solid #e9e4ff; }
+    @keyframes popIn { 0% { transform: scale(0.98); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .pop { animation: popIn 0.25s ease-out; }
+        .back-btn{
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+      font-weight: 800;
+      font-size: 14px;
+      color: #111827;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .back-btn:active{
+      transform: translateY(1px);
+    }
+
+  </style>
+</head>
+
+<body class="p-4 pb-12">
+  <div class="max-w-md mx-auto">
+
+    <!-- Header -->
+    <div class="sticky top-0 z-30 bg-[#f8f9ff]/90 backdrop-blur-sm pt-2 pb-4">
+      <div class="bg-white rounded-2xl card-shadow border border-gray-100 p-5 pop">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="text-[11px] font-bold text-gray-400 tracking-widest">説明ページ</p>
+            <h1 class="text-2xl font-extrabold text-gray-800 leading-tight">フック・引き込みとは？</h1>
+            <p class="text-sm text-gray-500 mt-1">カードをご案内するときの“話す順番”</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center">
+            <i class="fa-solid fa-route text-purple-600"></i>
+          </div>
+        </div>
+
+        <div class="mt-4 p-4 rounded-2xl accent-purple">
+          <p class="text-sm font-bold text-gray-800">
+            <span class="text-purple-600">この順番</span>で話すことが、とっても大事
+          </p>
+          <p class="text-xs text-gray-600 mt-1">
+            「興味を持つ → 気になる → 納得する」の流れを作れます。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flow -->
+    <div class="space-y-4">
+      <div class="bg-white p-5 rounded-2xl card-shadow border border-gray-100 pop">
+        <div class="flex items-center gap-2 font-bold text-gray-800">
+          <i class="fa-solid fa-list-ol text-slate-500"></i>
+          <h2 class="text-base">カードご案内のながれ</h2>
+        </div>
+
+        <div class="mt-4 space-y-3">
+          <!-- Step 1 -->
+          <div class="flex items-start gap-3">
+            <div class="shrink-0 w-9 h-9 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+              <span class="text-sm font-extrabold text-orange-500">1</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-extrabold text-gray-800 flex items-center gap-2">
+                <span>フック</span>
+                <span class="text-[10px] bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-bold">関心を持つきっかけ</span>
+              </p>
+              <p class="text-sm text-gray-600 mt-1">まずは「話を聞く理由」を作る一言。</p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flex items-start gap-3">
+            <div class="shrink-0 w-9 h-9 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center">
+              <span class="text-sm font-extrabold text-green-600">2</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-extrabold text-gray-800 flex items-center gap-2">
+                <span>引き込み</span>
+                <span class="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-bold">気になる理由を出す</span>
+              </p>
+              <p class="text-sm text-gray-600 mt-1">お客様の関心に合わせた魅力を伝える。</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flex items-start gap-3">
+            <div class="shrink-0 w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+              <span class="text-sm font-extrabold text-slate-700">3</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-extrabold text-gray-800 flex items-center gap-2">
+                <span>エポスカード説明</span>
+                <span class="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full font-bold">最後に基本</span>
+              </p>
+              <p class="text-sm text-gray-600 mt-1">安心できる情報を伝えて、申込につなげる。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example -->
+      <div class="bg-white rounded-2xl card-shadow border border-gray-100 overflow-hidden pop">
+        <div class="p-5 border-b border-dashed border-gray-200">
+          <div class="flex items-center gap-2 font-bold text-gray-800">
+            <i class="fa-solid fa-lightbulb text-yellow-500"></i>
+            <h2 class="text-base">例えば（MGAの場合）</h2>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">“フック → 引き込み → 説明”の順に話す例</p>
+        </div>
+
+        <div class="p-5 space-y-3">
+          <div class="p-4 bg-orange-50 rounded-2xl">
+            <p class="text-[11px] font-bold text-orange-600 mb-2">🪝 フック</p>
+            <p class="text-sm text-gray-800 font-bold">「MGAのファンクラブ入っています？」</p>
+            <p class="text-xs text-gray-600 mt-2">（関心をもつきっかけ）</p>
+          </div>
+
+          <div class="p-4 bg-green-50 rounded-2xl">
+            <p class="text-[11px] font-bold text-green-700 mb-2">📢 引き込み</p>
+            <p class="text-sm text-gray-800 font-bold">「MGAのエポスカードがあるんですが、本日入会いただくと、ファンクラブ年会費が500円オフになるんですよ」</p>
+            <p class="text-sm text-gray-800 font-bold mt-2">「さらに今日入会いただくと今のお会計から2000円オフになりますよ」</p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-2xl">
+            <p class="text-[11px] font-bold text-slate-700 mb-2">🧾 エポスカード説明</p>
+            <p class="text-sm text-gray-800 font-bold">「入会費・年会費ずっと無料です」</p>
+            <p class="text-sm text-gray-800 font-bold mt-2">「よかったら今日お作りしませんか？」</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini tips -->
+      <div class="accent-purple p-5 rounded-3xl card-shadow pop">
+        <div class="flex items-center gap-2 font-bold text-gray-800 text-sm">
+          <i class="fa-solid fa-star text-purple-600"></i>
+          <span>ポイント</span>
+        </div>
+        <ul class="mt-3 space-y-2 text-sm text-gray-700">
+          <li class="flex gap-2"><span class="text-purple-600 font-extrabold">・</span>フック→引き込み→カード説明の順番通りにやってみる</li>
+          <li class="flex gap-2"><span class="text-purple-600 font-extrabold">・</span>ポイントになる単語を覚えて言いやすい言い方に変えてみる</li>
+          <li class="flex gap-2"><span class="text-purple-600 font-extrabold">・</span>基本説明は最後（安心で背中を押す）</li>
+        </ul>
+      </div>
+
+      <div class="pb-10"></div>
+    </div>
+
+  </div>
+
+  <!-- ✅ 追加：戻るボタン（このページを閉じて元のページへ） -->
+  <button type="button" class="back-btn" onclick="window.close()" aria-label="元のページに戻る">
+    <i class="fa-solid fa-arrow-left text-gray-600"></i>
+    戻る
+  </button>
+
+</body>
+</html>`;
+
+function openHookHelpTab() {
+  // ✅ data:URL は長すぎると iPhone/Safari で真っ白になることがあるので Blob URL を使う
+  const blob = new Blob([HOOK_HELP_HTML], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const w = window.open(url, '_blank');
+  // 開けたら少し待って解放（開けなかった場合もリーク防止）
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
+}
+
+window.addEventListener('load', () => {
+  const a = document.getElementById('hook-help-link');
+  if (!a) return;
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    openHookHelpTab();
+  });
+});
+
 
     (async function init() {
       try {
