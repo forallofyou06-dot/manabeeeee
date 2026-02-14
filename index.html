@@ -2,255 +2,230 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>まなびー｜達人の投稿（閲覧）</title>
 
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JETCC9WWMR"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-LJZBTQNKKG');
+    gtag('config', 'G-0B7DZ2DQDD');
   </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-  <!-- ✅ Supabase JS（機能追加・UI変更なし） -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-    :root{
-      --primary: #3b82f6;
-      --primary-soft: #eff6ff;
-      --bg: #f8fafc;
-      --card-border: #e2e8f0;
-      --text: #1e293b;
-      --muted: #64748b;
+  <style>
+    :root {
+      --apple-bg: #F5F5F7;
+      --apple-card: #FFFFFF;
+      --apple-blue: #007AFF;
+      --apple-text: #1D1D1F;
+      --apple-secondary-text: #86868B;
+      --apple-border: rgba(0,0,0,0.1);
+
+      --radius-card: 20px;
+      --shadow-card: 0 4px 12px rgba(0,0,0,0.03);
     }
 
     body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Meiryo", sans-serif;
+      background-color: var(--apple-bg);
+      color: var(--apple-text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      letter-spacing: -0.02em;
+      line-height: 1.5;
     }
 
-    .font-heavy { font-weight: 800; letter-spacing: -0.01em; }
-
-    .card-shadow{
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    .glass-header {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 0.5px solid var(--apple-border);
     }
 
-    .surface{
-      background: #fff;
-      border: 1px solid var(--card-border);
+    .card {
+      background: var(--apple-card);
+      border-radius: var(--radius-card);
+      border: 0.5px solid var(--apple-border);
+      box-shadow: var(--shadow-card);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .card:active { transform: scale(0.99); opacity: 0.92; }
+
+    .btn-primary {
+      background-color: var(--apple-blue);
+      color: white;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: opacity 0.2s, transform 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-primary:active { opacity: 0.8; transform: scale(0.99); }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      border: 0.5px solid rgba(0,0,0,0.05);
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .label-text {
-      font-size: 0.7rem;
+    /* 属性 / フック / 引き込み / カード説明：色はUIに合わせて保持 */
+    .chip-attribute { background: #E5E5EA; color: #3A3A3C; }
+    .chip-hook { background: #FFF2E0; color: #FF9500; }
+    .chip-pitch { background: #E4F9E2; color: #28CD41; }
+    .chip-card { background: #E5F1FF; color: #007AFF; }
+
+    .label-caps {
+      font-size: 10px;
       font-weight: 700;
+      text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #94a3b8;
+      color: var(--apple-secondary-text);
+      margin-bottom: 6px;
+      display: block;
     }
 
-    .bg-primary{ background: var(--primary); }
-    .text-primary{ color: var(--primary); }
-
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:4px 12px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:600;
-      border:1px solid rgba(0,0,0,0.05);
-      white-space: nowrap; /* チップ内改行を防ぐ */
-    }
-    .chip-blue   { background: var(--primary-soft); color: var(--primary); border-color: #bfdbfe; }
-    .chip-orange { background:#fff7ed; color:#c2410c; border-color:#fed7aa; }
-    .chip-green  { background:#f0fdf4; color:#15803d; border-color:#bbf7d0; }
-    .chip-slate  { background:#f8fafc; color:#475569; border-color:#e2e8f0; }
-
-    /* リンクCTA：統一コンポーネント（イベントリンク/カードリンクで同じ見た目） */
-    .cta-link{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:800;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      color: #0f172a;
-      white-space: nowrap;    /* 「リ↵ンク」対策 */
-      flex: 0 0 auto;         /* 押しつぶされて改行されるのを防ぐ */
-      min-width: 92px;        /* ボタン幅の最小を確保 */
-      justify-content: center;
-    }
-    .cta-link:hover{
-      background: var(--primary-soft);
-      border-color: #bfdbfe;
-    }
-
-    /* 役に立った：サブアクション化（小さく・控えめに） */
-    .helpful-btn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      border: 1px solid #e2e8f0;
-      background: #fff;
-      transition: 0.2s;
+    .cta-link-icon {
+      font-size: 12px;
+      color: var(--apple-blue);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      background: #F2F2F7;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 0.5px solid rgba(0,0,0,0.06);
+      -webkit-tap-highlight-color: transparent;
       white-space: nowrap;
-      flex: 0 0 auto;
     }
-    .helpful-btn:hover{
-      background: #f8fafc;
-      border-color: #cbd5e1;
-    }
+    .cta-link-icon:active { transform: scale(0.99); opacity: 0.85; }
 
-    summary { list-style:none; outline: none; }
-    summary::-webkit-details-marker { display:none; }
+    details summary { list-style: none; outline: none; }
+    details summary::-webkit-details-marker { display: none; }
+
+    .summary-row{
+      border-radius: 999px;
+      padding: 10px 12px;
+      background: #F2F2F7;
+      border: 0.5px solid rgba(0,0,0,0.06);
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity .18s, transform .18s;
+    }
+    .summary-row:active{ opacity: .85; transform: scale(0.99); }
+
+    .helpful-pill{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 0.5px solid rgba(0,0,0,0.08);
+      background: #F2F2F7;
+      transition: opacity .18s, transform .18s;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+    .helpful-pill:active{ opacity: .85; transform: scale(0.99); }
+
+    .hairline { border-top: 0.5px solid rgba(0,0,0,0.06); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, .btn-primary, .cta-link-icon, .helpful-pill, .summary-row { transition: none; }
+    }
   </style>
 </head>
 
-<body class="pb-12">
+<body class="pb-20">
 
-  <!-- トップバー -->
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-100">
-    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-      <button class="p-2 -ml-2 rounded-xl hover:bg-gray-100 transition" aria-label="menu">
-        <i class="fa-solid fa-bars text-gray-500 text-lg"></i>
+  <header class="sticky top-0 z-50 glass-header">
+    <div class="max-w-md mx-auto px-5 py-3 flex items-center justify-between">
+      <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition" aria-label="menu">
+        <i class="fa-solid fa-bars text-lg text-gray-500"></i>
       </button>
 
-      <div class="flex items-center gap-2">
-        <div class="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center">
-          <i class="fa-regular fa-user text-white text-lg"></i>
-        </div>
-        <div class="leading-tight">
-          <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">APP</p>
-          <p class="text-lg font-extrabold text-gray-900 -mt-0.5">まなびー</p>
-        </div>
+      <div class="flex flex-col items-center">
+        <span class="text-[10px] font-bold text-gray-400 tracking-[0.2em] uppercase">Learning App</span>
+        <h1 class="text-base font-bold tracking-tight">まなびー</h1>
       </div>
 
-      <div class="w-10 h-10 rounded-full overflow-hidden border border-gray-100 bg-gray-200">
-        <img src="https://i.pravatar.cc/80?img=12" alt="avatar" class="w-full h-full object-cover" />
+      <div class="w-10 h-10 rounded-full overflow-hidden border border-gray-200">
+        <img src="https://i.pravatar.cc/80?img=12" alt="avatar" />
       </div>
     </div>
   </header>
 
-  <main id="app" class="max-w-md mx-auto px-4 pt-4 relative">
+  <main id="app" class="max-w-md mx-auto px-5 pt-6">
 
-    <!-- イベントヘッダー（MGAを少し小さくして主役を分散） -->
-    <div class="pt-2">
-      <div class="surface rounded-2xl card-shadow p-5">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">イベントタイトル</p>
-            <!-- 2xl → xl に近いサイズへ（少しだけ縮小） -->
-            <h1 class="text-xl font-extrabold text-gray-900 leading-tight">バレンタイン</h1>
-          </div>
+    <section class="mb-4">
+      <div class="card p-5">
+        <span class="label-caps">Current Event</span>
+        <div class="flex justify-between items-end">
+          <h2 class="text-2xl font-extrabold tracking-tight">DECO*27</h2>
           <div class="text-right">
-            <p class="text-[12px] font-extrabold text-primary">閲覧ページ</p>
-            <p class="text-[11px] text-gray-400">フック・ひきこみを“単語チップ”で覚える</p>
+            <p class="text-[12px] font-bold text-blue-600">閲覧ページ</p>
+            <p class="text-[10px] text-gray-400">単語チップでトークをマスターする</p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- イベントリンク / カードリンク（リンクCTAを統一） -->
-    <div class="mt-3 space-y-3">
-      <a id="event-link" href="https://www.0101.co.jp/086/news/detail.html?article_seq=11513&article_type=fea" target="_blank" rel="noopener"
-         class="block surface rounded-2xl card-shadow p-5 hover:-translate-y-[1px] transition">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-primary-soft flex items-center justify-center">
-            <i class="fa-solid fa-link text-primary"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">イベントリンク</p>
-
-            <div class="flex items-center justify-between gap-3 mt-1">
-              <p class="text-base font-extrabold text-gray-900 truncate">今回のイベント詳細</p>
-              <span class="cta-link">
-                <i class="fa-solid fa-arrow-up-right-from-square text-gray-500"></i>
-                公式ページへ
-              </span>
-            </div>
-
-            <p class="text-[11px] text-gray-500 mt-1">
-              公式HPに遷移し、詳細情報を確認できます。
-            </p>
-          </div>
+    <section class="grid grid-cols-1 gap-3 mb-8">
+      <a id="event-link" href="#" target="_blank" class="card p-4 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+          <i class="fa-solid fa-calendar-check text-xl"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <span class="label-caps">Event Info</span>
+          <p class="text-sm font-bold">今回のイベント詳細</p>
+          <span class="cta-link-icon mt-2">公式ページへ <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
         </div>
       </a>
 
-      <a id="card-link" href="#" target="_blank" rel="noopener"
-         class="block surface rounded-2xl card-shadow p-5 hover:-translate-y-[1px] transition">
-        <div class="flex items-start gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center">
-            <i class="fa-regular fa-credit-card text-orange-600"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">カードリンク（準備中）</p>
-
-            <div class="flex items-center justify-between gap-3 mt-1">
-              <p class="text-base font-extrabold text-gray-900 truncate">関連カード</p>
-              <span class="cta-link">
-                <i class="fa-solid fa-arrow-up-right-from-square text-gray-500"></i>
-                準備中
-              </span>
-            </div>
-
-            <p class="text-[11px] text-gray-500 mt-1">
-             今回のイベントに関連したカードのページに遷移します。入会特典などを確認できます。
-            </p>
-          </div>
+      <a id="card-link" href="#" target="_blank" class="card p-4 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600">
+          <i class="fa-regular fa-credit-card text-xl"></i>
         </div>
+        <div class="flex-1 min-w-0">
+          <span class="label-caps">Related Card</span>
+          <p class="text-sm font-bold">関連カード</p>
+          <p class="text-[11px] text-gray-500 mt-0.5 leading-tight">同じボーカロイドのプロデューサーの券面のため、親和性あり。</p>
+          <span class="cta-link-icon mt-2">カード詳細 <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+        </div>
+      </a>
+    </section>
+
+    <div class="flex items-center justify-between mb-4 px-1">
+      <h3 class="text-xl font-bold tracking-tight">達人の投稿</h3>
+      <a id="hook-help-link" href="#" class="text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
+        <i class="fa-regular fa-circle-question mr-1"></i>フック・引き込みとは？
       </a>
     </div>
 
-    <!-- 投稿セクション見出し -->
-    <div class="mt-4 surface rounded-2xl card-shadow p-5">
-      <div class="flex items-center justify-between gap-3">
-        <div>
-          <p class="text-[11px] font-extrabold text-gray-400 tracking-widest">投稿</p>
-          <h2 class="text-xl font-extrabold text-gray-900 leading-tight">達人の投稿</h2>
-        </div>
-        <a id="hook-help-link" href="#" class="inline-flex items-center gap-2 px-3 py-2 rounded-2xl border border-gray-200 bg-gray-50 text-sm font-extrabold text-gray-700 hover:bg-gray-100 transition whitespace-nowrap">
-          <i class="fa-regular fa-circle-question text-gray-500"></i>
-          フック・引き込みとは？
-        </a>
-      </div>
-      <p class="text-[11px] text-gray-400 mt-2">フック・ひきこみを“単語チップ”で覚える</p>
-    </div>
+    <div id="ranking-container" class="space-y-6"></div>
 
-    <!-- 一覧 -->
-    <div id="ranking-container" class="space-y-4 pb-20 mt-4"></div>
-
-    <!-- ✅ 追加：投稿 / アンケート（横並び）※本当に一番下 -->
-    <div class="mt-4">
+    <!-- ✅ 一番下：投稿 / アンケート -->
+    <div class="mt-10 mb-10">
       <div class="grid grid-cols-2 gap-3">
-        <a id="post-btn" href="#"
-           class="surface rounded-2xl card-shadow p-4 hover:-translate-y-[1px] transition flex items-center justify-center gap-2 font-extrabold text-gray-900">
-          <i class="fa-solid fa-pen-to-square text-gray-500"></i>
-          投稿
+        <a id="post-btn" href="#" class="btn-primary flex flex-col items-center justify-center py-4 gap-1 shadow-lg shadow-blue-200">
+          <i class="fa-solid fa-pen-to-square text-lg"></i>
+          <span class="text-sm">投稿</span>
         </a>
-
-        <a id="survey-btn" href="#"
-           class="surface rounded-2xl card-shadow p-4 hover:-translate-y-[1px] transition flex items-center justify-center gap-2 font-extrabold text-gray-900">
-          <i class="fa-solid fa-clipboard-list text-gray-500"></i>
-          アンケート
+        <a id="survey-btn" href="#" class="card flex flex-col items-center justify-center py-4 gap-1 border-gray-200">
+          <i class="fa-solid fa-clipboard-list text-lg text-gray-500"></i>
+          <span class="text-sm font-bold">アンケート</span>
         </a>
       </div>
 
-      <div class="mt-2 space-y-1 pb-2">
+      <div class="mt-3 px-1 space-y-1">
         <p class="text-[11px] text-gray-500">※運営中にお気づきの点があれば、「投稿」からぜひ共有してください（いつでもOK）</p>
         <p class="text-[11px] text-gray-500">※ご利用後に「アンケート」へのご回答にご協力をお願いいたします</p>
       </div>
@@ -259,83 +234,79 @@
   </main>
 
   <script>
+    // ===============================
+    // ✅ 内容：👇のページの情報を「失わず」保持
+    // ===============================
     let posts = [
       {
         id: 1,
         staff_name: "櫻井さん",
         event_name: "バレンタイン",
         store_name: "有楽町",
-        
-        // 🏷 属性：客層＆状況
+
+        // 🏷 属性：客層＆状況（👆のUIでは最上段チップに表示）
         tags: [
-          "20〜60代女性",
-          "急いでる人多い",
-          "手短に",
+          "男女比6:4",
+          "高校生〜20代中心",
+          "40代・親子連れもいる",
         ],
+
         // 🪝 フック：短い“言い回し”をチップ化
         hook_words: [
-          "ポイントで割引できますが、エポスカードお持ちですか？",
+          "今日3000円超えてるので会場限定・非売品が当たる抽選会に参加できますが、エポスカードお持ちですか？",
+          "エポスカード持っている前提で話す",
         ],
 
         // 📢 引き込み：魅力の核（=引き込み）をチップ化
         pitch_words: [
-          "お会計からすぐ3000円割引",
-          "チョコ価格上昇なのでキャンペーンで割引中",
+        "高校卒業、18歳以上を確かめる",
+          "スマホ入会で3000円割引で入場料分が実質割引",
+          "抽選会B賞ブロマイド8枚コンプセットをプレゼント",
+          
         ],
 
-        // 🧾 カード説明：チップ
+        // 🧾 カード説明：チップ（👇の内容にあった「時間ない方には無理に勧めない」を追加）
         card_words: [
-          "昔のマルイカードのイメージが強い人多い",
-          "いまのエポスをしっかり説明",
-          "所要20分前後",
-          "時間ない人には無理に勧めない",
+          "マルイは年間300タイトル以上イベント開催",
+          "次回以降も抽選・特典メリットあり",
+          "所要約20分",
         ],
 
-        // ▼ 全文（detailsで見る用）※ ここを分割！
         hook_content:
-`【フック（レジを打ちながら）】
-「こちらの売り場でもエポスのポイントで割引き出来るのでお待ちですか？」
+`【フック】
+・3000円以上買う方が多いので
+『DECO27のイベントは今回で2回目なんですが、今日お会計3000円超えるので会場限定の非売品が当たる抽選会がこの後出来る権利があるんですが、エポスカード今日持って来ましたか？』と、持っている程でお話します。
+過去にもイベント開催してる事や抽選会・会場限定・非売品などの言葉を使うとお客様も話を聞いてくれる可能性が高くなります。`,
 
-・有楽町でも半分くらいのお客様はエポスカードお持ちの方が多かったのでこの聞き方の方が持ってる方はエポスで支払いしてもらえたり、結果ポイントが貯まってて喜んでもらえるケースが多かった。
-・持ってない方はこの聞き方だと「持ってるけど忘れました」とか「持ってません」と確認が出来る。`,
-
-        // ✅ 引き込み（全文）
         pitch_content:
 `【引き込み】
-まず「過去に作った事ありますか？」と確認してから
-「今、バレンタインに合わせてキャンペーンやってて作った事ない方がスマホで作ってこのカードで支払いするとこのお会計からすぐに3000円割引きになりますよ」
-または
-「今、チョコレートも価格が上がったり、自分用に買う方が多いのでキャンペーンで3000円割引き付けてます」
+はじめの聞き方でお客様が持っていないと分かったら18歳以上高校卒業されている事を確認してから
+『今回このイベントに合わせてキャンペーンをやっていて、スマホから無料で入会して頂くと入場料分をこちらのお会計から3000円割引きさせて頂くのと、抽選会のＢ賞のブロマイド8枚コンプリートセットを会場で作って頂いた方に抽選会前にプレゼントしてるので作ってからお会計しませんか？」とさらに感心を高めます。`,
 
-・Le TAOとかデルレイなどの商品を買う方は自分用で買う方が多いので作ってくれるケースが多かった。`,
-
-        // ✅ カード説明（全文）
         card_content:
-`【カード説明（食品イベント向け：短く・安心を最後に）】
-食品のイベントは急いでる方も多いので
-「お作りするお時間大丈夫なら2年目以降も年会費や更新費などもないVISAの付いたクレジットカードでお客様のスマホから入会が出来てこの場で3000円割引いて⚪︎⚪︎⚪︎円で買って頂けますよ」
+`【カード説明】
+『VISAの付いたマルイグループが発行しているクレジットカードで入会金・年会費や更新費など一切かからないので安心してお申し込み出来ます」「アーティストやアニメのイベントをマルイは年間で300タイトル以上やっているのでカード持っているとまた次回のイベントの時にご提示して現金払いでも抽選出来たり特典多くもらったり出来るので今日作ったカード払いでこの場で3000円引きで○○○円でお得にお買い物していきませんか？』
+※ここで作りますとなったらお時間20分くらい大丈夫ですか？や免許やマイナンバーなどお名前入ってる物お持ちですか？や今日カードが作れたらそのカードでお支払いして下さいね。など確認してご案内します。
+※ここまでお話しして断ったり、お時間ない方には無理おすすめせず『じゃ、またの機会にお願いしますね』とさっさと精算します。`,
 
-※この時点で時間がないという方は無理せず「じゃ、又次回お願いします」と無理にお勧めしません。
-どのくらいかかりますか？と聞かれた場合も「早い方で20分前後ですかね？」とすぐ出来るとは言わず納得された方だけ案内。
-※3000円未満のお買い上げの方は「今日カードで買っても引き落としがないのでそのまま商品お持ち帰り出来ますよ」など説明も響きます。`,
-
-        // ✅ 補足メモ（全文）
         memo_content:
 `【補足メモ】
-・食品のイベント全般的に急いでる方や時間のない方が多いので時間がない方には無理に勧めない。
-（無理に勧めても途中離脱が多いし、ちゃんと説明しても年代上の方は面倒くさいと戻ってくるから）
-・年代上の方が多いので昔のマルイのカードのイメージを持っている方が多いので、2年目以降も会費がかからない・お申込みに紙は使わずお客様のスマホだけで出来る・VISAが付いてるのでマルイ以外でも使えるなどしっかりお話しする事が大切。
-・長い口コミは精算列が長くなるので手短にお勧めは粘らない。
-この辺がポイントだと思います。`,
+▪️客層
+男女比6:4  高校生〜20代中心で
+40代や親子連れもいる。
+エポスのデザイン券面で「ピノキオピー」という同じボーカロイドのプロデューサーの券面が親和性があり、カードのおすすめの際に見せるとその券面でお申し込みする方が多い。前回もその券面が人気でした。
+`,
 
         likes: 18,
         helpful: 0
       }
     ];
 
-    function chipsHtml(words, colorClass) {
-      if (!Array.isArray(words) || words.length === 0) return '';
-      return words.map(w => `<span class="chip ${colorClass}">${escapeHtml(w)}</span>`).join('');
+    // ===============================
+    // UI補助
+    // ===============================
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]));
     }
 
     function renderRanking() {
@@ -343,97 +314,86 @@
       if (!container) return;
       container.innerHTML = '';
 
+      // 👇のページの「likesで並べ替え」ロジックを保持
       const sorted = [...posts].sort((a, b) => (b.likes || 0) - (a.likes || 0));
 
       sorted.forEach((p, idx) => {
         const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '📄';
-
         const card = document.createElement('div');
-        card.className = "surface p-5 rounded-2xl card-shadow";
+        card.className = "card p-5";
 
-        card.innerHTML = `
-          <div class="flex justify-between items-start mb-4 gap-3">
-            <div class="min-w-0">
-              <span class="text-[10px] bg-[var(--primary-soft)] text-primary px-2 py-0.5 rounded-full font-extrabold border border-[#bfdbfe]">
-                ${escapeHtml(p.event_name)}
-              </span>
-              <h3 class="font-extrabold text-gray-900 mt-1 truncate">${medal} ${escapeHtml(p.staff_name)}
-                <span class="text-xs text-gray-400 font-normal">@${escapeHtml(p.store_name || "-")}</span>
-              </h3>
-            </div>
+card.innerHTML = `
+  <div class="flex justify-between items-start mb-5 gap-3">
+    <div class="min-w-0">
+      <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider">${escapeHtml(p.event_name)}</span>
+      <h4 class="text-lg font-bold mt-1 truncate">${medal} ${escapeHtml(p.staff_name)} <span class="text-xs text-gray-400 font-normal">@${escapeHtml(p.store_name || "-")}</span></h4>
+    </div>
 
-            <!-- 役に立った：サブ化（小さめ・控えめ） -->
-            <button onclick="helpfulPost(${p.id})" class="helpful-btn" aria-label="役に立った">
-              <i class="fa-regular fa-thumbs-up text-gray-500 text-[14px]"></i>
-              <span class="text-[12px] font-extrabold text-gray-800">役に立った</span>
-              <span class="text-[11px] font-extrabold text-gray-500">(${p.helpful || 0})</span>
-            </button>
-          </div>
+    <button onclick="helpfulPost(${p.id})" class="helpful-pill shrink-0" aria-label="役に立った">
+      <i class="fa-regular fa-thumbs-up text-sm text-gray-600"></i>
+      <span class="text-xs font-bold text-gray-800">役に立った</span>
+      <span class="text-xs font-bold text-gray-500">(${escapeHtml(p.helpful || 0)})</span>
+    </button>
+  </div>
 
-          <div class="mb-3">
-            <p class="text-[10px] font-extrabold text-orange-600 mb-2">🪝 フック</p>
-            <div class="flex flex-wrap gap-2">
-              ${chipsHtml(p.hook_words, 'chip-orange')}
-            </div>
-          </div>
+  <div class="space-y-4">
+    <div>
+      <span class="label-caps">🪝 フック</span>
+      <div class="flex flex-wrap gap-1.5">${(p.hook_words || []).map(w => `<span class="chip chip-hook">${escapeHtml(w)}</span>`).join('')}</div>
+    </div>
 
-          <div class="mb-3">
-            <p class="text-[10px] font-extrabold text-green-700 mb-2">📢 引き込み</p>
-            <div class="flex flex-wrap gap-2">
-              ${chipsHtml(p.pitch_words, 'chip-green')}
-            </div>
-          </div>
+    <div>
+      <span class="label-caps">📢 引き込み</span>
+      <div class="flex flex-wrap gap-1.5">${(p.pitch_words || []).map(w => `<span class="chip chip-pitch">${escapeHtml(w)}</span>`).join('')}</div>
+    </div>
 
-          <div class="mb-3">
-            <p class="text-[10px] font-extrabold text-primary mb-2">🧾 カード説明</p>
-            <div class="flex flex-wrap gap-2">
-              ${chipsHtml(p.card_words, 'chip-blue')}
-            </div>
-          </div>
+    <div>
+      <span class="label-caps">🧾 カード説明</span>
+      <div class="flex flex-wrap gap-1.5">${(p.card_words || []).map(w => `<span class="chip chip-card">${escapeHtml(w)}</span>`).join('')}</div>
+    </div>
 
-          <div class="mb-1">
-            <p class="text-[10px] font-extrabold text-slate-700 mb-2">🏷 属性</p>
-            <div class="flex flex-wrap gap-2">
-              ${chipsHtml(p.tags, 'chip-slate')}
-            </div>
-          </div>
+    <!-- ✅ ここに属性チップを移動（カード説明の下） -->
+    <div class="pt-3 hairline">
+      <span class="label-caps">🏷 属性</span>
+      <div class="flex flex-wrap gap-1.5">
+        ${(p.tags || []).map(t => `<span class="chip chip-attribute">${escapeHtml(t)}</span>`).join('')}
+      </div>
+    </div>
+  </div>
 
-          <details class="mt-4 details-anim rounded-2xl border border-gray-200 bg-gray-50">
-            <summary class="px-4 py-3 cursor-pointer flex items-center justify-between">
-              <span class="text-sm font-extrabold text-gray-800">全文を見る</span>
-              <i class="fa-solid fa-chevron-down text-gray-400 chev"></i>
-            </summary>
-            <div class="px-4 pb-4">
+  <details class="mt-6 pt-4 border-t border-gray-100">
+    <summary class="summary-row flex justify-center items-center text-xs font-bold text-gray-600 cursor-pointer hover:text-gray-700">
+      全文を見る <i class="fa-solid fa-chevron-down ml-2 text-[11px] text-gray-500"></i>
+    </summary>
+    <div class="mt-4 space-y-4">
+      <div class="bg-orange-50/50 p-4 rounded-xl text-sm leading-relaxed border border-orange-100/60">
+        <p class="font-bold text-orange-500 text-[10px] uppercase mb-2">フック全文</p>
+        <div class="whitespace-pre-wrap text-gray-700">${escapeHtml(p.hook_content || "")}</div>
+      </div>
+      <div class="bg-green-50/50 p-4 rounded-xl text-sm leading-relaxed border border-green-100/60">
+        <p class="font-bold text-green-600 text-[10px] uppercase mb-2">引き込み全文</p>
+        <div class="whitespace-pre-wrap text-gray-700">${escapeHtml(p.pitch_content || "")}</div>
+      </div>
+      <div class="bg-blue-50/50 p-4 rounded-xl text-sm leading-relaxed border border-blue-100/60">
+        <p class="font-bold text-blue-600 text-[10px] uppercase mb-2">説明全文</p>
+        <div class="whitespace-pre-wrap text-gray-700">${escapeHtml(p.card_content || "")}</div>
+      </div>
+      <div class="bg-gray-100/50 p-4 rounded-xl text-sm leading-relaxed border border-gray-200/60">
+        <p class="font-bold text-gray-500 text-[10px] uppercase mb-2">補足メモ</p>
+        <div class="whitespace-pre-wrap text-gray-700">${escapeHtml(p.memo_content || "")}</div>
+      </div>
+    </div>
+  </details>
+`;
 
-              <div class="mt-3 p-4 bg-orange-50 rounded-2xl">
-                <p class="text-[11px] font-extrabold text-orange-600 mb-2">🪝 フック（全文）</p>
-                <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.hook_content || "")}</p>
-              </div>
-
-              <div class="mt-3 p-4 bg-green-50 rounded-2xl">
-                <p class="text-[11px] font-extrabold text-green-700 mb-2">📢 引き込み（全文）</p>
-                <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.pitch_content || "")}</p>
-              </div>
-
-              <div class="mt-3 p-4 bg-blue-50 rounded-2xl">
-                <p class="text-[11px] font-extrabold text-primary mb-2">🧾 カード説明（全文）</p>
-                <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.card_content || "")}</p>
-              </div>
-
-              <div class="mt-3 p-4 bg-slate-50 rounded-2xl">
-                <p class="text-[11px] font-extrabold text-slate-700 mb-2">📝 補足メモ</p>
-                <p class="text-sm text-gray-700 whitespace-pre-wrap">${escapeHtml(p.memo_content || "")}</p>
-              </div>
-
-            </div>
-          </details>
-        `;
 
         container.appendChild(card);
       });
     }
 
-    // ✅ Supabase（機能追加・UI変更なし）
+    // ===============================
+    // ✅ Supabase（👇のページの機能を保持）
+    // ===============================
     const SUPABASE_URL = "https://uwlpkdgcfzdhgiptasov.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vKVE-SAFvXjq5fLHApnqFg_B5QbxJZq";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -479,44 +439,19 @@
         }
       } catch (e) {
         console.error(e);
-        // UIは変えない条件なので、画面表示は変えずにconsoleだけ
       }
     };
 
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
     // ===============================
-    // ✅ 追加：投稿 / アンケート（動作だけ付与・UIは上で追加済み）
+    // ✅ 追加：リンク（👇のページのURL指定を保持）
     // ===============================
-    const POST_URL = "https://docs.google.com/forms/d/1ZVv_aefg2sSfXiKEzNXprRJEb0C0tQiUAH50M_l-RAs/edit?usp=forms_home&ouid=117951192700997366273&ths=true";
+    const EVENT_URL = "https://www.0101.co.jp/086/event/detail.html?article_seq=138536&article_type=sto";
+    const CARD_URL  = "https://www.eposcard.co.jp/gecard/ec00013/index.html";
+    const POST_URL  = "https://docs.google.com/forms/d/1ZVv_aefg2sSfXiKEzNXprRJEb0C0tQiUAH50M_l-RAs/edit?usp=forms_home&ouid=117951192700997366273&ths=true";
     const SURVEY_URL = "https://docs.google.com/forms/d/1P8QJ34C5Mt6PQq82GSrHhbm3K8mQK-gSNp33HA9at9k/edit";
 
-    window.addEventListener('load', () => {
-      const postBtn = document.getElementById('post-btn');
-      const surveyBtn = document.getElementById('survey-btn');
-
-      if (postBtn) {
-        postBtn.href = POST_URL;
-        postBtn.target = "_blank";
-        postBtn.rel = "noopener";
-      }
-
-      if (surveyBtn) {
-        surveyBtn.href = SURVEY_URL;
-        surveyBtn.target = "_blank";
-        surveyBtn.rel = "noopener";
-      }
-    });
-
     // ===============================
-    // 「フック・引き込みとは？」別タブ（1HTML完結）
+    // 「フック・引き込みとは？」別タブ（👇のページの内容を保持）
     // ===============================
     const HOOK_HELP_HTML = `<!DOCTYPE html>
 <html lang="ja">
@@ -524,17 +459,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>フック・引き込みとは？｜カードご案内の流れ</title>
-
   <script src="https://cdn.tailwindcss.com"><\/script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
   <style>
     body { background-color: #f8f9ff; color: #333; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
     .accent-purple { background-color: #f3f0ff; border: 1px solid #e9e4ff; }
     @keyframes popIn { 0% { transform: scale(0.98); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     .pop { animation: popIn 0.25s ease-out; }
-        .back-btn{
+    .back-btn{
       position: fixed;
       left: 16px;
       bottom: 16px;
@@ -555,17 +488,11 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
-    .back-btn:active{
-      transform: translateY(1px);
-    }
-
+    .back-btn:active{ transform: translateY(1px); }
   </style>
 </head>
-
 <body class="p-4 pb-12">
   <div class="max-w-md mx-auto">
-
-    <!-- Header -->
     <div class="sticky top-0 z-30 bg-[#f8f9ff]/90 backdrop-blur-sm pt-2 pb-4">
       <div class="bg-white rounded-2xl card-shadow border border-gray-100 p-5 pop">
         <div class="flex items-start justify-between gap-3">
@@ -578,7 +505,6 @@
             <i class="fa-solid fa-route text-purple-600"></i>
           </div>
         </div>
-
         <div class="mt-4 p-4 rounded-2xl accent-purple">
           <p class="text-sm font-bold text-gray-800">
             <span class="text-purple-600">この順番</span>で話すことが、とっても大事
@@ -590,7 +516,6 @@
       </div>
     </div>
 
-    <!-- Flow -->
     <div class="space-y-4">
       <div class="bg-white p-5 rounded-2xl card-shadow border border-gray-100 pop">
         <div class="flex items-center gap-2 font-bold text-gray-800">
@@ -599,7 +524,6 @@
         </div>
 
         <div class="mt-4 space-y-3">
-          <!-- Step 1 -->
           <div class="flex items-start gap-3">
             <div class="shrink-0 w-9 h-9 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
               <span class="text-sm font-extrabold text-orange-500">1</span>
@@ -613,7 +537,6 @@
             </div>
           </div>
 
-          <!-- Step 2 -->
           <div class="flex items-start gap-3">
             <div class="shrink-0 w-9 h-9 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center">
               <span class="text-sm font-extrabold text-green-600">2</span>
@@ -627,7 +550,6 @@
             </div>
           </div>
 
-          <!-- Step 3 -->
           <div class="flex items-start gap-3">
             <div class="shrink-0 w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
               <span class="text-sm font-extrabold text-slate-700">3</span>
@@ -643,7 +565,6 @@
         </div>
       </div>
 
-      <!-- Example -->
       <div class="bg-white rounded-2xl card-shadow border border-gray-100 overflow-hidden pop">
         <div class="p-5 border-b border-dashed border-gray-200">
           <div class="flex items-center gap-2 font-bold text-gray-800">
@@ -674,7 +595,6 @@
         </div>
       </div>
 
-      <!-- Mini tips -->
       <div class="accent-purple p-5 rounded-3xl card-shadow pop">
         <div class="flex items-center gap-2 font-bold text-gray-800 text-sm">
           <i class="fa-solid fa-star text-purple-600"></i>
@@ -689,36 +609,46 @@
 
       <div class="pb-10"></div>
     </div>
-
   </div>
 
-  <!-- ✅ 追加：戻るボタン（このページを閉じて元のページへ） -->
   <button type="button" class="back-btn" onclick="window.close()" aria-label="元のページに戻る">
     <i class="fa-solid fa-arrow-left text-gray-600"></i>
     戻る
   </button>
-
 </body>
 </html>`;
 
-function openHookHelpTab() {
-  // ✅ data:URL は長すぎると iPhone/Safari で真っ白になることがあるので Blob URL を使う
-  const blob = new Blob([HOOK_HELP_HTML], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const w = window.open(url, '_blank');
-  // 開けたら少し待って解放（開けなかった場合もリーク防止）
-  setTimeout(() => URL.revokeObjectURL(url), 30_000);
-}
+    function openHookHelpTab() {
+      const blob = new Blob([HOOK_HELP_HTML], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 30_000);
+    }
 
-window.addEventListener('load', () => {
-  const a = document.getElementById('hook-help-link');
-  if (!a) return;
-  a.addEventListener('click', (e) => {
-    e.preventDefault();
-    openHookHelpTab();
-  });
-});
+    // ===============================
+    // init
+    // ===============================
+    window.addEventListener('load', () => {
+      // links
+      const eventLink = document.getElementById('event-link');
+      const cardLink  = document.getElementById('card-link');
+      const postBtn   = document.getElementById('post-btn');
+      const surveyBtn = document.getElementById('survey-btn');
 
+      if (eventLink) eventLink.href = EVENT_URL;
+      if (cardLink) cardLink.href = CARD_URL;
+
+      if (postBtn)   { postBtn.href = POST_URL; postBtn.target="_blank"; postBtn.rel="noopener"; }
+      if (surveyBtn) { surveyBtn.href = SURVEY_URL; surveyBtn.target="_blank"; surveyBtn.rel="noopener"; }
+
+      const help = document.getElementById('hook-help-link');
+      if (help) {
+        help.addEventListener('click', (e) => {
+          e.preventDefault();
+          openHookHelpTab();
+        });
+      }
+    });
 
     (async function init() {
       try {
@@ -726,7 +656,6 @@ window.addEventListener('load', () => {
         await loadHelpfulCountsFromDB();
       } catch (e) {
         console.error(e);
-        // UIは変えない条件なので、画面表示は変えずにconsoleだけ
       } finally {
         renderRanking();
       }
